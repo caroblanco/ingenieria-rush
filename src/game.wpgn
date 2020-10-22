@@ -1,0 +1,22 @@
+import wollok.game.*
+import players.*
+import movimientos.*
+import enemys.*
+import disparos.*
+
+program game{
+    game.title("Sobreviviendo")
+    game.height(20.5)
+    game.width(24)
+    game.boardGround("pasillos (3).png")
+    
+    game.addVisual(elevator)
+    game.addVisual(caro)
+    enemigos.aparecerEnemigos()
+    game.showAttributes(caro)
+    game.showAttributes(elevator)
+    config.configurarTeclas()
+    config.configurarColisiones()
+    
+    game.start()
+}
