@@ -2,32 +2,21 @@ import wollok.game.*
 import players.*
 import enemys.*
 import disparos.*
+import pantallaInicio.*
 
 object config {
     method configurarTeclas() { //RESPOSABILIDAD DE CONDICIONES DEL TECLADO
         keyboard.left().onPressDo({ 
-            if(caro.enElFloor() && (caro.enElTablero()  || caro.position().x() == 22)){
-                caro.move(caro.position().left(1))
-                caro.nuevaOrientacion(izquierda)
-            }
+           personajeSeleccionado.personaje().moveIzq()
         })
         keyboard.right().onPressDo({ 
-            if(caro.enElFloor() && (caro.enElTablero() || caro.position().x() == 0)){
-                caro.move(caro.position().right(1))
-                caro.nuevaOrientacion(derecha)
-            }
+            personajeSeleccionado.personaje().moveDer()
         })
         keyboard.up().onPressDo({ 
-            if(caro.enElevator() && not enemigos.listaEnemigos().any({enemy => enemy.enElElevator()})&& (elevator.enElTablero() || elevator.position().y() == 0)){
-                elevator.move(elevator.position().up(1))
-                caro.move(caro.position().up(1))
-            }
+            elevator.paArriba()
         })
         keyboard.down().onPressDo({ 
-            if(caro.enElevator() && not enemigos.listaEnemigos().any({enemy => enemy.enElElevator()}) && (elevator.enElTablero() || elevator.position().y() == 16)){
-                elevator.move(elevator.position().down(1))
-                caro.move(caro.position().down(1))
-            }
+            elevator.paAbajo()
         })
         keyboard.space().onPressDo({ 
             tirosPlayer.disparar()
@@ -35,17 +24,16 @@ object config {
     }
 
     method configurarColisiones() {
-        game.onCollideDo(caro, {enemy => enemy.encuentro(caro)})
-        //game.onCollideDo(tirito, {enemy => enemy.encuentra(tirito)})
+        game.onCollideDo(personajeSeleccionado.personaje(), {enemy => enemy.encuentro(personajeSeleccionado.personaje())})
     }
     method colisionDisparoPersonaje(){
         enemigos.listaEnemigos().forEach({enemy => game.onCollideDo(enemy, {tiro => tiro.encuentra(enemy,tiro)})})
-        //game.onCollideDo(tirito, {enemigo => tirito.encuentra(enemigo,tirito)})
     }
     method colisionDisparoEnemigo(tiro){
         game.onCollideDo(tiro,{jugador=>jugador.recibeDisparo(tiro)})
     }
 }
+
 object activador{
     method iniciar() {
         self.perseguirAPlayer()
@@ -74,34 +62,36 @@ object perseguirPlayer{
             self.movimientoIzq(enemy)
         }
     }
-    method movimientoDer(enemy){ //POLIMORFISMO
-        if (caro.enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 9){
+    method movimientoDer(enemy){ 
+        if (personajeSeleccionado.personaje().enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 9){
             self.irIzq(enemy)
         } else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && enemy.position().x()<8)){
             self.irDer(enemy)
         }
     }
     method movimientoIzq(enemy){
-        if (caro.enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 14){
+        if (personajeSeleccionado.personaje().enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 14){
             self.irDer(enemy)}
          else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && enemy.position().x()>15)){
             self.irIzq(enemy)
         }
     }
     method playerALaIzq(enemy){
-        return (enemy.position().x()<caro.position().x())
+        return (enemy.position().x()<personajeSeleccionado.personaje().position().x())
     }
     method playerALaDer(enemy){
-        return (enemy.position().x()>caro.position().x())
+        return (enemy.position().x()>personajeSeleccionado.personaje().position().x())
     }
     method irIzq(enemy){
             enemy.move(enemy.position().left(1))
+            enemy.nuevaDireccion(izquierda)
     }
     method irDer(enemy){
             enemy.move(enemy.position().right(1))
+            enemy.nuevaDireccion(derecha)
     }
     method playerDistintoPiso(enemy){
-        return (caro.position().y() != enemy.position().y())
+        return (personajeSeleccionado.personaje().position().y() != enemy.position().y())
     }
     
     method irAlLimite(enemy){

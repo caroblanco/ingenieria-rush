@@ -2,27 +2,37 @@ import wollok.game.*
 import players.*
 import movimientos.*
 import disparos.*
+import pantallaInicio.*
 
-class Feind{ //enemigo aber auf Deutch
-    //var property movimiento
+class Feind{ //enemigo aber auf Deutsch
     var property position
-    //var property direccion
+    var direccion = izquierda
+    var impactos
+    
+    method direccion() = direccion
+    
+    method nuevaDireccion(nuevaD){
+        direccion=nuevaD
+    }
+       
     method ataque()=0
+    
     method move(nuevaPosicion){
         position = nuevaPosicion
     }
-
+	
+	
+	//RESPONSABILIDAD DEL ELEVATOR
     method enElElevator(){
         return (self.position().x().between(10,13))
     }
     method encuentro(jugador){
         game.onTick(800, "perder vida", {jugador.perderVida(self.ataque())}) 
-        game.say(jugador,"me esta matando el coloquio de discreta")
         self.evaluador()
     }
 
     method evaluador(){
-        game.onTick(800,"misma pos", {if(self.position() != caro.position()) self.sacartick()})
+        game.onTick(800,"misma pos", {if(self.position() != personajeSeleccionado.personaje().position()) self.sacartick()})
     }
 
     method sacartick(){
@@ -30,7 +40,7 @@ class Feind{ //enemigo aber auf Deutch
         game.removeTickEvent("misma pos")
     }
 
-    method impactos()
+    method impactos() = impactos
 
     method encuentra(enemigo,tiro){
         if(enemigo.impactos() == 0){
@@ -53,40 +63,55 @@ class Feind{ //enemigo aber auf Deutch
     method recibeDisparo(disparo){
     }
 
-    method restarImp()
-    method disparar()
+    method restarImp(){
+        impactos-=1
+    }
+    
+    method disparar(){
+        if(self.position().y() == personajeSeleccionado.personaje().position().y()){
+        	tirosEnemigo.disparar(self)
+        }
+    }
 }
 
 class FeindSimple inherits Feind{
-    var property impactos = 0
-    override method restarImp(){
-        impactos-=1
-    }
 
     method image() {
         return "pinieiro.png"
     }
-    override method ataque() = 5 //cambiar nombre a "cant"
+    override method ataque() = 5
     override method disparar(){}
 }
 
 class FeindDispara inherits Feind{
-    var property direccion
-    var property impactos = 1
+
     method image() {
         return "vanos.png"
     }
     override method ataque() = 10
 
-    override method restarImp(){
-        impactos-=1
-    }
-    override method disparar(){
-        if(self.position().y() == caro.position().y()){
+    /*override method disparar(){
+        if(self.position().y() == personajeSeleccionado.personaje().position().y()){
         	tirosEnemigo.disparar(self)
         }
-    }
+    }*/
 }
+
+class FeindPapota inherits FeindDispara{
+
+    override method image() {
+        return "enemy.png"
+    }
+    override method ataque() = 15
+
+   /*  override method disparar(){
+        if(self.position().y() == personajeSeleccionado.personaje().position().y()){
+        	tirosEnemigo.disparar(self)
+        }
+    }*/
+}
+
+///////////////////////////////////////////////////////////////////
 
 object enemigos{
     var enemigo
@@ -98,19 +123,30 @@ object enemigos{
     method aparecerEnemigos(){
         game.onTick(8000,"nuevo enemigo que dispara",{
         	
-            enemigo=new FeindDispara(position= game.at(self.generarPuerta(), 4), direccion = derecha)
+            enemigo=new FeindDispara(impactos = 1,position= game.at(self.generarPuerta(), 4), direccion = derecha)
             self.nuevoEnemigo()                 												// a caro no le gusta esto, cami lo secunda
             listaEnemigosDisparo.add(enemigo)                                                	// a caro no le  gusta esto
             if (listaEnemigosDisparo.size() == 1)
                 activador.ontick() 
-            if (listaEnemigos.size()==1)
+            if (listaEnemigos.size()==1)		//se repite
                 activador.perseguirAPlayer()
         }) 
+        
         game.onTick(5000,"nuevo enemigo simple",{
         	
-            enemigo=new FeindSimple(position= game.at(self.generarPuerta(), 0))
+            enemigo=new FeindSimple(impactos = 0,position= game.at(self.generarPuerta(), 0))
             self.nuevoEnemigo()
-            if (listaEnemigos.size()==1)
+            if (listaEnemigos.size()==1)		//se repite
+                activador.perseguirAPlayer()
+        })
+        
+        game.onTick(10000,"nuevo enemigo papota",{
+        	enemigo = new FeindPapota(impactos = 5, position = game.at(self.generarPuerta(),8))
+        	self.nuevoEnemigo()
+        	listaEnemigosDisparo.add(enemigo)                                                	// a caro no le  gusta esto
+            if (listaEnemigosDisparo.size() == 1)
+                activador.ontick() 
+            if (listaEnemigos.size()==1)		//se repite
                 activador.perseguirAPlayer()
         })
     }
@@ -126,3 +162,4 @@ object enemigos{
         listaEnemigos.add(enemigo)
     }
 }
+

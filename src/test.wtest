@@ -1,0 +1,59 @@
+import players.*
+import wollok.game.*
+import pantallaInicio.*
+import disparos.*
+import enemys.*
+
+describe "movimiento de personajes"{
+	test "el personaje va a la izquierda"{
+		caro.moveIzq()
+		assert.equals(game.at(10,0), caro.position())
+	}
+	
+	test "cuando el personaje va a la izquierda su direccion cambia a la izquierda"{
+		caro.moveIzq()
+		assert.equals(izquierda,caro.direccion())
+	}
+	
+	test "el personaje va a la derecha"{
+		caro.moveDer()
+		assert.equals(game.at(12,0), caro.position())
+	}
+	
+	test "cuando el personaje va a la derecha su direccion cambia a la derecha"{
+		caro.moveDer()
+		assert.equals(derecha,caro.direccion())
+	}
+}
+
+describe "movimiento ascensor"{
+	test "el ascensor sube una posicion en y"{
+		personajeSeleccionado.cambiarP(caro)
+		elevator.paArriba()
+		assert.equals(game.at(3,1), elevator.position())
+	}
+	test "el ascensor desde la posicion inicial (3,0) no puede bajar mas, se mantiene el y"{
+		personajeSeleccionado.cambiarP(caro)
+		elevator.paAbajo()
+		assert.equals(game.at(3,0), elevator.position())
+	}
+}
+
+describe "personaje dispara"{
+	test "personaje dispara y mata al enemigo comun"{
+		personajeSeleccionado.cambiarP(caro)
+		tirosPlayer.disparar()
+		assert.that(tirosPlayer.tiros().size() == 1)
+	}
+}
+
+describe "personaje recibe disparos"{
+	test "personaje recibe un disparo y pierde 10 de vida"{
+		personajeSeleccionado.cambiarP(caro)
+		const enemigo = new FeindSimple(position= game.at(enemigos.generarPuerta(), 0)) 
+		const disparo = new TiroEnemigo(direccion = enemigo.direccion(), position=enemigo.position())
+		
+		personajeSeleccionado.personaje().recibeDisparo(disparo)
+		assert.equals(67,personajeSeleccionado.personaje().vida())
+	}
+}

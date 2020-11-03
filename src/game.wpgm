@@ -3,20 +3,20 @@ import players.*
 import movimientos.*
 import enemys.*
 import disparos.*
+import pantallaInicio.*
+
 
 program game{
-    game.title("Sobreviviendo")
+    game.title("Consiguiendo el titulo")
     game.height(20.5)
     game.width(24)
     game.boardGround("pasillos (3).png")
-    
-    game.addVisual(elevator)
-    game.addVisual(caro)
-    enemigos.aparecerEnemigos()
-    game.showAttributes(caro)
-    game.showAttributes(elevator)
-    config.configurarTeclas()
-    config.configurarColisiones()
-    
+	game.addVisual(inicio)
+	game.addVisual(caroAElegir)
+	game.addVisual(camiAElegir)
+	game.addVisual(franAElegir)
+	
+	teclas.activarTeclas()
     game.start()
 }
+
