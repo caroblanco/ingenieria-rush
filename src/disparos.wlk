@@ -21,7 +21,7 @@ class Tirito{
 
     method enPantalla() = self.position().x() > 0 || self.position().y() < game.width()
     
-    method remove(listaT) = 
+    //method remove(listaT) = 
 }
 
 class TiroEnemigo inherits Tirito{
