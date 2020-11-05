@@ -3,6 +3,7 @@ import players.*
 import movimientos.*
 import enemys.*
 import disparos.*
+import mascotas.*
 
 object configurarJuego{
     method empezar(seleccionado){
@@ -14,6 +15,7 @@ object configurarJuego{
         tirosPlayer.nuevaPosition()
         tirosEnemigo.nuevaPosition()
         config.configurarColisiones()
+        seleccionado.mascota().aparece()
     }
 }
 
@@ -30,9 +32,9 @@ object teclas{
 }
 
 object inicio{
-	method position() = game.at(0,2)
+	method position() = game.at(2,1)
 	method image(){
-		return "aulamagna.png"
+		return "cosa1.png"
 	}
 }
 
@@ -71,7 +73,7 @@ object nombreADefinir{
 ///////////////////////////////////////////////////////////////////
 
 object camiAElegir{
-	method position() = game.at(8,9)
+	method position() = game.at(7,9)
 	method aLaIzq() = franAElegir
 	method aLaDer() = caroAElegir
 	method seleccionado() = cami
@@ -86,10 +88,11 @@ object camiAElegir{
 }
 
 object caroAElegir{
-	method position() = game.at(12,9)
+	method position() = game.at(11,9)
 	method aLaIzq() = camiAElegir
 	method aLaDer() = franAElegir
 	method seleccionado() = caro
+	
 	method image(){
 		if(nombreADefinir.personajeAColor() == self){
 			return "caro-der.png"
@@ -100,10 +103,11 @@ object caroAElegir{
 }
 
 object franAElegir{
-	method position() = game.at(16,9)
+	method position() = game.at(15,9)
 	method aLaIzq() = caroAElegir
 	method aLaDer() = camiAElegir
 	method seleccionado() = fran
+	
 	method image(){
 		if(nombreADefinir.personajeAColor() == self){
 			return "fran-der.png"
@@ -116,6 +120,7 @@ object franAElegir{
 object personajeSeleccionado{
 	var personaje
 	method personaje() = personaje
+	method mascota() = personaje.mascota()
 	
 	method cambiarP(nuevoP){
 		personaje = nuevoP

@@ -5,12 +5,13 @@ import disparos.*
 import pantallaInicio.*
 
 object config {
-    method configurarTeclas() { //RESPOSABILIDAD DE CONDICIONES DEL TECLADO
+	const player = personajeSeleccionado.personaje() 
+    method configurarTeclas() {
         keyboard.left().onPressDo({ 
-           personajeSeleccionado.personaje().moveIzq()
+           player.moveIzq()
         })
         keyboard.right().onPressDo({ 
-            personajeSeleccionado.personaje().moveDer()
+            player.moveDer()
         })
         keyboard.up().onPressDo({ 
             elevator.paArriba()
@@ -24,7 +25,7 @@ object config {
     }
 
     method configurarColisiones() {
-        game.onCollideDo(personajeSeleccionado.personaje(), {enemy => enemy.encuentro(personajeSeleccionado.personaje())})
+        game.onCollideDo(player, {enemy => enemy.encuentro(player)})
     }
     method colisionDisparoPersonaje(){
         enemigos.listaEnemigos().forEach({enemy => game.onCollideDo(enemy, {tiro => tiro.encuentra(enemy,tiro)})})
@@ -51,6 +52,8 @@ object activador{
 }
 
 object perseguirPlayer{
+	const player = personajeSeleccionado.personaje()
+	
     method algo(){enemigos.listaEnemigos().forEach({enemy => self.nuevaPosicion(enemy)})}
                                 //puertas en x: 2-6-16-20 -> CONSTANTES
     method nuevaPosicion(enemy) {
@@ -63,24 +66,24 @@ object perseguirPlayer{
         }
     }
     method movimientoDer(enemy){ 
-        if (personajeSeleccionado.personaje().enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 9){
+        if (elevator.enElevator(player) && self.playerDistintoPiso(enemy) && enemy.position().x() == 9){
             self.irIzq(enemy)
-        } else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && enemy.position().x()<8)){
+        } else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && tablero.aLaIzqAscensor(enemy))){
             self.irDer(enemy)
         }
     }
     method movimientoIzq(enemy){
-        if (personajeSeleccionado.personaje().enElevator() && self.playerDistintoPiso(enemy) && enemy.position().x() == 14){
+        if (elevator.enElevator(player) && self.playerDistintoPiso(enemy) && enemy.position().x() == 14){
             self.irDer(enemy)}
-         else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && enemy.position().x()>15)){
+         else if (not self.playerDistintoPiso(enemy) || (self.playerDistintoPiso(enemy) && tablero.aLaDerAscensor(enemy))){
             self.irIzq(enemy)
         }
     }
     method playerALaIzq(enemy){
-        return (enemy.position().x()<personajeSeleccionado.personaje().position().x())
+        return (enemy.position().x()<player.position().x())
     }
     method playerALaDer(enemy){
-        return (enemy.position().x()>personajeSeleccionado.personaje().position().x())
+        return (enemy.position().x()>player.position().x())
     }
     method irIzq(enemy){
             enemy.move(enemy.position().left(1))
@@ -91,13 +94,13 @@ object perseguirPlayer{
             enemy.nuevaDireccion(derecha)
     }
     method playerDistintoPiso(enemy){
-        return (personajeSeleccionado.personaje().position().y() != enemy.position().y())
+        return (player.position().y() != enemy.position().y())
     }
     
     method irAlLimite(enemy){
-        if (enemy.position().x()<8)
+        if (tablero.aLaIzqAscensor(enemy))
             self.irDer(enemy)
-        else if (enemy.position().x()>15)
+        else if (tablero.aLaDerAscensor(enemy))
             self.irIzq(enemy)
     }
 }

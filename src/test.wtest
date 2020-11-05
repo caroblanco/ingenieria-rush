@@ -3,6 +3,7 @@ import wollok.game.*
 import pantallaInicio.*
 import disparos.*
 import enemys.*
+import mascotas.*
 
 describe "movimiento de personajes"{
 	test "el personaje va a la izquierda"{
@@ -48,12 +49,23 @@ describe "personaje dispara"{
 }
 
 describe "personaje recibe disparos"{
+	//AGREGAR EL TEST CON LA MASCOTA, PARA TENER DOS CONDICIONES DISTINTAS
 	test "personaje recibe un disparo y pierde 10 de vida"{
 		personajeSeleccionado.cambiarP(caro)
-		const enemigo = new FeindSimple(position= game.at(enemigos.generarPuerta(), 0)) 
+		configurarJuego.empezar(caro)
+		const enemigo = new FeindDispara(impactos = 0, position= game.at(enemigos.generarPuerta(), 0)) 
 		const disparo = new TiroEnemigo(direccion = enemigo.direccion(), position=enemigo.position())
-		
+		game.addVisual(disparo)
 		personajeSeleccionado.personaje().recibeDisparo(disparo)
-		assert.equals(67,personajeSeleccionado.personaje().vida())
+		assert.equals(91,personajeSeleccionado.personaje().vida())
+	}
+}
+
+describe "personaje encuentra a su mascota"{
+	test "encontrar a mascota y que se ponga al lado del personaje"{
+		personajeSeleccionado.cambiarP(caro)
+		game.addVisual(mora)
+		mora.encuentro(caro)
+		assert.equals(caro.position().left(1), mora.position())
 	}
 }

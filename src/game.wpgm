@@ -10,7 +10,7 @@ program game{
     game.title("Consiguiendo el titulo")
     game.height(20.5)
     game.width(24)
-    game.boardGround("pasillos (3).png")
+    game.boardGround("pasillos (4).png")
 	game.addVisual(inicio)
 	game.addVisual(caroAElegir)
 	game.addVisual(camiAElegir)
@@ -19,4 +19,3 @@ program game{
 	teclas.activarTeclas()
     game.start()
 }
-
